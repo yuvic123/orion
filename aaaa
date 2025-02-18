@@ -140,10 +140,6 @@ task.spawn(
 
 local function AddDraggingFunctionality(DragPoint, Main)
     pcall(function()
-        -- Set ZIndex for the draggable main element and the drag point to ensure they're on top
-        Main.ZIndex = 10  -- Set ZIndex for the main frame
-        DragPoint.ZIndex = 10  -- Set ZIndex for the drag point (this could be the top part of the GUI)
-
         local Dragging, DragInput, MousePos, FramePos = false
         DragPoint.InputBegan:Connect(function(Input)
             if Input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -174,6 +170,7 @@ local function AddDraggingFunctionality(DragPoint, Main)
         end)
     end)
 end
+
 
 
 local function Create(Name, Properties, Children)
