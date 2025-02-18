@@ -443,7 +443,7 @@ CreateElement(
             {
                 Text = "",
                 AutoButtonColor = false,
-                BackgroundTransparency = 1,
+                BackgroundTransparency = 2,
                 BorderSizePixel = 0
             }
         )
