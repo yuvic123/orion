@@ -54,32 +54,13 @@ end
 
 local Orion = Instance.new("ScreenGui")
 Orion.Name = "Orion"
-
--- Generic method to protect the GUI based on the executor
-local function protectGui(gui)
-    if syn and syn.protect_gui then
-        syn.protect_gui(gui)
-    elseif shared and shared.protect_gui then
-        shared.protect_gui(gui)
-    elseif pcall(function() gethui() end) then
-        gui.Parent = gethui() or game.CoreGui
-        return
-    else
-        gui.Parent = game.CoreGui
-    end
+if syn then
+    syn.protect_gui(Orion)
+    Orion.Parent = game.CoreGui
+else
+    Orion.Parent = gethui() or game.CoreGui
 end
 
--- Set parent and protect the GUI
-protectGui(Orion)
-
--- Set ZIndex to make sure the GUI is on top of other UI elements
-Orion.ZIndex = 10
-
--- Ensure the GUI is fully visible and interactive
-Orion.BackgroundTransparency = 0  -- Set transparency to 0 to ensure visibility
-Orion.Parent = game.CoreGui
-
--- Remove previous instances of the same GUI
 if gethui then
     for _, Interface in ipairs(gethui():GetChildren()) do
         if Interface.Name == Orion.Name and Interface ~= Orion then
@@ -94,20 +75,6 @@ else
     end
 end
 
--- Create a button and handle its click event
-local button = Instance.new("TextButton")
-button.Text = "Click Me"
-button.Size = UDim2.new(0, 200, 0, 50)
-button.Position = UDim2.new(0.5, -100, 0.5, -25)
-button.Parent = Orion
-
--- Ensure the button is clickable by setting proper transparency
-button.BackgroundTransparency = 0  -- Ensure button is visible and clickable
-button.TextButton.MouseButton1Click:Connect(function()
-    print("Button Clicked!")
-end)
-
--- Function to check if the GUI is running
 function OrionLib:IsRunning()
     if gethui then
         return Orion.Parent == gethui()
@@ -115,7 +82,6 @@ function OrionLib:IsRunning()
         return Orion.Parent == game:GetService("CoreGui")
     end
 end
-
 
 local function AddConnection(Signal, Function)
     if (not OrionLib:IsRunning()) then
@@ -139,39 +105,63 @@ task.spawn(
 )
 
 local function AddDraggingFunctionality(DragPoint, Main)
-    pcall(function()
-        local Dragging, DragInput, MousePos, FramePos = false
-        DragPoint.InputBegan:Connect(function(Input)
-            if Input.UserInputType == Enum.UserInputType.MouseButton1 then
-                Dragging = true
-                MousePos = Input.Position
-                FramePos = Main.Position
-                Input.Changed:Connect(function()
-                    if Input.UserInputState == Enum.UserInputState.End then
-                        Dragging = false
+    pcall(
+        function()
+            local Dragging, DragInput, MousePos, FramePos = false
+            DragPoint.InputBegan:Connect(
+                function(Input)
+                    if
+                        Input.UserInputType == Enum.UserInputType.MouseButton1 or
+                            Input.UserInputType == Enum.UserInputType.Touch
+                     then
+                        Dragging = true
+                        MousePos = Input.Position
+                        FramePos = Main.Position
+
+                        Input.Changed:Connect(
+                            function()
+                                if Input.UserInputState == Enum.UserInputState.End then
+                                    Dragging = false
+                                end
+                            end
+                        )
                     end
-                end)
-            end
-        end)
+                end
+            )
 
-        DragPoint.InputChanged:Connect(function(Input)
-            if Input.UserInputType == Enum.UserInputType.MouseMovement then
-                DragInput = Input
-            end
-        end)
+            DragPoint.InputChanged:Connect(
+                function(Input)
+                    if
+                        Input.UserInputType == Enum.UserInputType.MouseMovement or
+                            Input.UserInputType == Enum.UserInputType.Touch
+                     then
+                        DragInput = Input
+                    end
+                end
+            )
 
-        UserInputService.InputChanged:Connect(function(Input)
-            if Input == DragInput and Dragging then
-                local Delta = Input.Position - MousePos
-                TweenService:Create(Main, TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-                    Position = UDim2.new(FramePos.X.Scale, FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y)
-                }):Play()
-            end
-        end)
-    end)
+            UserInputService.InputChanged:Connect(
+                function(Input)
+                    if Input == DragInput and Dragging then
+                        local Delta = Input.Position - MousePos
+                        TweenService:Create(
+                            Main,
+                            TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+                            {
+                                Position = UDim2.new(
+                                    FramePos.X.Scale,
+                                    FramePos.X.Offset + Delta.X,
+                                    FramePos.Y.Scale,
+                                    FramePos.Y.Offset + Delta.Y
+                                )
+                            }
+                        ):Play()
+                    end
+                end
+            )
+        end
+    )
 end
-
-
 
 local function Create(Name, Properties, Children)
     local Object = Instance.new(Name)
