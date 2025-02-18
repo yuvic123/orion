@@ -72,6 +72,13 @@ end
 -- Set parent and protect the GUI
 protectGui(Orion)
 
+-- Set ZIndex to make sure the GUI is on top of other UI elements
+Orion.ZIndex = 10
+
+-- Ensure the GUI is fully visible and interactive
+Orion.BackgroundTransparency = 0  -- Set transparency to 0 to ensure visibility
+Orion.Parent = game.CoreGui
+
 -- Remove previous instances of the same GUI
 if gethui then
     for _, Interface in ipairs(gethui():GetChildren()) do
@@ -86,6 +93,19 @@ else
         end
     end
 end
+
+-- Create a button and handle its click event
+local button = Instance.new("TextButton")
+button.Text = "Click Me"
+button.Size = UDim2.new(0, 200, 0, 50)
+button.Position = UDim2.new(0.5, -100, 0.5, -25)
+button.Parent = Orion
+
+-- Ensure the button is clickable by setting proper transparency
+button.BackgroundTransparency = 0  -- Ensure button is visible and clickable
+button.TextButton.MouseButton1Click:Connect(function()
+    print("Button Clicked!")
+end)
 
 -- Function to check if the GUI is running
 function OrionLib:IsRunning()
