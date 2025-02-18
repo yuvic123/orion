@@ -322,6 +322,25 @@ local function CheckKey(Table, Key)
 end
 
 CreateElement(
+    "Button",
+    function()
+        local Button =
+            Create(
+            "TextButton",
+            {
+                Text = "",
+                AutoButtonColor = false,
+                BackgroundTransparency = 1,
+                BorderSizePixel = 0,
+                ZIndex = 10,
+                Active = true,
+            }
+        )
+        return Button
+    end
+)
+
+CreateElement(
     "Corner",
     function(Scale, Offset)
         local Corner =
@@ -435,22 +454,6 @@ CreateElement(
     end
 )
 
-CreateElement(
-    "Button",
-    function()
-        local Button =
-            Create(
-            "TextButton",
-            {
-                Text = "",
-                AutoButtonColor = false,
-                BackgroundTransparency = 2,
-                BorderSizePixel = 0
-            }
-        )
-        return Button
-    end
-)
 
 CreateElement(
     "ScrollFrame",
